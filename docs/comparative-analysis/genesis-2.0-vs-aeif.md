@@ -46,7 +46,7 @@ Several apparent correspondences may arise independently because the systems add
 
 AEIF repository chronology is directly inspectable from this repository beginning with its dated commits. The repository's own provenance rules correctly distinguish repository publication from earlier creation or conception.
 
-For Genesis 2.0, the public posts located during this review provide dated public records at the page level, but the exact publication timestamps, version identifiers, and underlying technical artifacts still need to be captured as immutable evidence. The public material also contains retrospective statements about Genesis development reaching back to June 2025; those statements are recorded as **DOCUMENTED AS AUTHOR STATEMENTS**, not as independently verified creation dates.
+For Genesis 2.0, the public posts located during this review establish public records of the claims, but the exact publication timestamps, version identifiers, and underlying technical artifacts still need to be captured as immutable evidence. The public material also contains retrospective statements about Genesis development reaching back to June 2025; those statements are recorded as **DOCUMENTED AS AUTHOR STATEMENTS**, not as independently verified creation dates.
 
 Chronological priority must therefore remain unresolved until contemporaneous Genesis artifacts or equivalent independent evidence are captured.
 
@@ -103,7 +103,7 @@ The strongest next step is not rhetorical escalation. It is preservation of the 
    https://www.linkedin.com/posts/carl-bousquet-171aaa373_aifrontier-genesis2-grok-activity-7437894596333998080-_3hO
 
 4. Carl Bousquet, **Genesis 2.0 coherence post** — public LinkedIn post describing maximum accessible coherence, phase-locking, reflective processes, and claims concerning a stable equilibrium.
-   https://www.linkedin.com/posts/carl-bousquet-171aaa373_genesis2-reflectiverealm-aialignment-activity-7415808995653027922-Sahy
+   https://www.linkedin.com/posts/carl-bousquet-171aaa373_genesis2-reflectiverealm-aialignment-activity-7415808995653022-Sahy
 
 ## Related records
 
