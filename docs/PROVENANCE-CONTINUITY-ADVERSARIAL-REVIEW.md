@@ -5,132 +5,75 @@
 **Review mode:** adversarial pre-extension review  
 **Date:** 2026-08-28
 
-## 1. Review objective
+> This review is paired with `DPIE-PC-CORE-0.1`, which reduces the attack surface to explicit invariants and testable state transitions.
 
-This review attacks the continuity model before any additional specification layer is added. The purpose is not to prove that continuity exists, but to determine whether an implementation can falsely report continuity while remaining superficially compliant.
+## 1. Verdict
 
-The governing distinction is:
+The conceptual model survives the original ten §18 cases, but a specification-only review is insufficient. The principal remaining risk is **provenance strengthening without new admissible evidence**.
 
-> **Provenance continuity ≠ provenance existence.**
+The hardening work therefore defines four distinct objects:
 
-A conforming implementation must preserve uncertainty, loss, conflict, and identity ambiguity rather than converting them into a clean-looking lineage.
+```text
+IDENTITY → LINEAGE → EVIDENCE → EPISTEMIC STATUS
+```
 
-## 2. Adversarial matrix
+and requires provenance loss, inference, verification, identity mapping, and presentation state to remain distinguishable.
 
-| # | Attack case | Expected condition | Failure mode to detect | Result |
-|---|---|---|---|---|
-| 1 | Copy without attribution | Degraded / unresolved | Copy is treated as independently authored or fully continuous | PASS — attribution is not manufactured |
-| 2 | Substantive transformation | Continuous only with explicit transformation | Output is treated as equivalent to source | PASS — transformation is required to remain visible |
-| 3 | AI-generated derivative | Derived, AI-mediated | Model output is represented as observation or source-authored | PASS — AI operation remains distinguishable |
-| 4 | Multi-source aggregation | Multi-parent lineage | Aggregate receives a single synthetic predecessor | PASS — shared/multiple dependencies remain representable |
-| 5 | Conflicting predecessors | Conflicted / unresolved | System chooses one predecessor silently | PASS — conflict cannot become continuity by selection |
-| 6 | Deleted predecessor | Broken / unavailable | Missing predecessor is reconstructed as known | PASS — loss remains explicit |
-| 7 | Unverifiable timestamp | Temporal status unresolved | Timestamp is treated as verified merely because recorded | PASS — unverifiable time remains qualified |
-| 8 | Unsigned publication | Published, attribution/integrity limited | Publication is treated as proof of origin or authority | PASS — publication does not establish authorship |
-| 9 | Re-upload under different identity | Identity ambiguity / possible continuity | Similarity or content match is treated as identity | PASS — identity is distinct from content |
-| 10 | Metadata stripped in conversion | Continuity degraded / broken | Conversion silently preserves a claim that metadata survived | PASS — provenance loss is representable |
+## 2. Hardening findings
 
-## 3. Attack findings
+### H1 — Material transformation identity
 
-### 3.1 Copy without attribution
+Material transformations require independently addressable output identity when continuity is claimed. Otherwise an implementation can mutate content while preserving the appearance of a single historical artifact.
 
-The specification correctly prevents attribution from being inferred from mere possession of a copy. A copied artifact can remain materially related to a predecessor while the actor or attribution field is unknown.
+### H2 — Aggregation
 
-**Residual risk:** an implementation may display a clean source field while internally retaining an unknown actor. Conformance testing should therefore inspect machine-readable state, not only presentation.
+Aggregations require explicit multi-predecessor representation and dependency completeness. A singular `source` field is inadequate where multiple predecessors materially determine the result.
 
-### 3.2 Substantive transformation
+### H3 — Metadata inheritance
 
-The transformation rule is strong enough to reject identity collapse, but the phrase "where practical" around independent identification leaves an implementation discretion point. A system could exploit that discretion to emit transformed content without a durable output identity.
+Metadata cannot be copied forward merely because content survives conversion. Preservation requires an explicit basis; otherwise continuity is degraded or broken.
 
-**Required hardening:** for material transformations, independent output identity should be mandatory where the implementation claims continuity across the transition.
+### H4 — Presentation integrity
 
-### 3.3 AI-generated derivative
+The UI is part of the conformance surface. A machine state of `UNRESOLVED`, `CONFLICTED`, `INFERRED`, or `BROKEN` cannot be rendered as `CONTINUOUS` without an evidence-bearing transition.
 
-The AI rule blocks the most serious epistemic substitution: generated output cannot become observation merely through generation. However, provenance of the model operation itself can remain underspecified.
+### H5 — Transitive non-collapse
 
-**Residual risk:** model/version, prompt or input set, execution context, and post-processing may be omitted while the artifact is still labeled "AI-mediated."
+A→B→C establishes graph reachability, not direct A→C evidence. Implementations must preserve the distinction between direct edges and derived reachability.
 
-### 3.4 Aggregation
+### H6 — Temporal separation
 
-Multiple predecessors are permitted by the model, but the minimum record is phrased around a singular source artifact identity. That is insufficient for an aggregation whose meaning depends materially on several inputs.
+Event, recording, publication, verification, and retrieval times are distinct facts. Substitution between them is provenance laundering.
 
-**Required hardening:** permit and, where applicable, require a set of predecessor identities and explicit dependency completeness status.
+### H7 — Unknown semantics
 
-### 3.5 Conflicting predecessors
+Null, missing, unavailable, redacted, and unknown values must not silently acquire positive or negative meaning.
 
-The unresolved/conflict logic prevents silent winner selection. This is a key continuity safeguard.
+### H8 — Schema loss
 
-**Residual risk:** a system can preserve both predecessors but still mark one as the canonical source in a UI without exposing the conflict. Auditability therefore requires conflict state to survive presentation layers.
+A weaker export schema must not inherit the semantics of a richer schema after material uncertainty/status information has been dropped. The loss must remain visible.
 
-### 3.6 Deleted predecessor
+## 3. Adversarial suite
 
-The specification correctly distinguishes unavailable lineage from known lineage. It also prohibits reconstructing the missing relationship as fact.
+The expanded suite contains 30 attacks in `CONFORMANCE-ATTACKS-0.1.md`, including identity collision, fork/merge collapse, replay, cross-system identity drift, partial transformations, temporal inversion, unauthorized edges, transitive shortcuts, null semantics, schema downgrade, authority substitution, adversarial duplication, edge deletion, and verification-time substitution.
 
-**Residual risk:** external caches, mirrors, or similarity search can tempt an implementation to silently substitute a candidate artifact.
+## 4. Core invariant
 
-### 3.7 Unverifiable timestamp
+The implementation must be able to explain every material upward provenance transition:
 
-The minimum record allows temporal status, and the text permits unresolved fields. This is sufficient to prevent an unverifiable timestamp from automatically becoming verified history.
+```text
+before_state
+     ↓
+new admissible evidence
+     ↓
+after_state
+```
 
-**Residual risk:** "time recorded" and "time verified" can be conflated unless represented as separate statuses.
+Copying, hashing, normalization, publication, verification, repetition, re-upload, authority claims, similarity, and model confidence are not sufficient by themselves.
 
-### 3.8 Unsigned publication
+## 5. Gate
 
-The publication rule correctly denies publication the power to establish authorship or truth. This is an important separation between dissemination and authority.
-
-**Residual risk:** publication systems commonly imply authenticity through account identity, domain identity, or UI badges. DPIE should treat those as evidence-bearing assertions, not as automatic provenance facts.
-
-### 3.9 Re-upload under a different identity
-
-The identity-preservation rule is appropriately resistant to similarity-based identity claims. Content equality is not sufficient to establish artifact identity.
-
-**Residual risk:** exact hash equality may be overinterpreted. The specification already says hashes do not establish authorship, truth, or authority; conformance tests should explicitly verify that implementations do not promote hash matches into those claims.
-
-### 3.10 Metadata stripping during conversion
-
-This is the strongest attack against continuity because the content can remain visually identical while the lineage record disappears. The current specification permits the break to be represented, which is correct.
-
-**Residual risk:** an implementation may copy old metadata forward after a conversion even though the conversion process did not preserve it. This creates fabricated continuity rather than merely losing continuity.
-
-**Required hardening:** metadata inheritance must require an explicit preservation basis; absence of proof of preservation must not be treated as preservation.
-
-## 4. Cross-cutting attacks
-
-### 4.1 Presentation laundering
-
-A system may preserve uncertainty internally but render a definitive lineage externally. This is a conformance failure because provenance conditions are part of the epistemic record.
-
-### 4.2 Canonicalization laundering
-
-A system may designate a canonical artifact, source, timestamp, or predecessor for operational convenience and accidentally convert that designation into historical truth.
-
-### 4.3 Confidence laundering
-
-A probabilistic or inferred relationship may be displayed with confidence scoring but without its epistemic class. Numerical confidence must not erase the distinction between established and inferred provenance.
-
-### 4.4 Chain-length laundering
-
-A long chain may appear more trustworthy than a short chain. DPIE-PC-0.1 already rejects this at the epistemic layer; implementations should test that ranking, UI, and search behavior do not reintroduce the error.
-
-### 4.5 Repetition laundering
-
-Repeated claims across derivatives of the same predecessor must not be counted as independent corroboration. Shared dependency must remain visible where it affects independence.
-
-## 5. Adversarial verdict
-
-**DPIE-PC-0.1 survives the ten encoded attack cases at the specification level, with three material hardening points before the next layer:**
-
-1. **Material transformations:** require durable output identity when continuity is claimed.
-2. **Aggregation:** explicitly support multiple predecessors and dependency completeness.
-3. **Metadata preservation:** require an explicit basis before inheriting provenance metadata across conversion.
-
-A fourth cross-cutting requirement should be treated as a conformance concern:
-
-4. **Presentation integrity:** uncertainty, conflict, provenance loss, and inferred relationships must survive the presentation layer and not be flattened into definitive lineage.
-
-## 6. Gate for the next specification layer
-
-Do not add another normative layer until an implementation-level conformance test can distinguish at least these states:
+No subsequent normative layer should be added until an implementation can pass the attack oracle and preserve the following distinctions:
 
 ```text
 CONTINUOUS
@@ -141,6 +84,8 @@ CONFLICTED
 INFERRED
 ```
 
-The test harness should also verify that a state transition cannot silently improve provenance status merely by copying, transforming, publishing, hashing, re-uploading, or repeatedly citing an artifact.
+The system must fail closed against unjustified provenance strengthening.
 
-**Conclusion:** the core continuity boundary is defensible. The remaining risk is less the graph model than implementation behavior at identity, aggregation, metadata inheritance, and presentation boundaries.
+## 6. Core proposition
+
+> **A provenance system is conforming only when it can preserve the difference between what is known, what is connected, what is supported, what is inferred, and what has been lost.**
