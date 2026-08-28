@@ -10,7 +10,7 @@ This branch is the adversarial hardening track for DPIE-PC-0.1.
 4. `PROVENANCE-CONTINUITY-STATE-MACHINE-0.1.md` — conservative state transitions.
 5. `PROVENANCE-CONTINUITY-ATTACK-ORACLE-0.1.md` — anti-laundering oracle.
 6. `CONFORMANCE-ATTACKS-0.1.md` — 30 implementation attacks.
-7. `../tests/pc-core-attack-vectors.json` — machine-readable attack vectors.
+7. `tests/pc-core-attack-vectors.json` — machine-readable attack vectors.
 
 ## Current gate
 
