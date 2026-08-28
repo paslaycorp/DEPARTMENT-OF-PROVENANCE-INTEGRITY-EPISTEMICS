@@ -1,0 +1,23 @@
+name: DPIE CCI Conformance
+
+on:
+  push:
+    paths:
+      - 'tests/credential-claim-inflation-vectors.json'
+      - 'tests/run_cci_conformance.py'
+      - 'docs/CREDENTIAL-TO-CLAIM-INFLATION-ATTACKS-0.1.md'
+      - '.github/workflows/cci-conformance.yml'
+  pull_request:
+    paths:
+      - 'tests/credential-claim-inflation-vectors.json'
+      - 'tests/run_cci_conformance.py'
+      - 'docs/CREDENTIAL-TO-CLAIM-INFLATION-ATTACKS-0.1.md'
+      - '.github/workflows/cci-conformance.yml'
+
+jobs:
+  fixture-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run CCI fixture gate
+        run: python3 tests/run_cci_conformance.py
