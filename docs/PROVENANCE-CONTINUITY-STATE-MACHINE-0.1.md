@@ -77,11 +77,11 @@ limitations
 
 If `evidence_ids` is empty, an upward transition is non-conforming unless a formally defined state normalization rule applies that does not add a historical claim.
 
-## Ordering
+## No total trust ordering
 
 The six states SHALL NOT be treated as a simple total trust ranking. In particular:
 
-- `CONFLICTED` is not simply "less trustworthy" than `BROKEN"`;
+- `CONFLICTED` is not simply "less trustworthy" than `BROKEN`;
 - `INFERRED` is not simply "better" than `UNRESOLVED`;
 - `DEGRADED` can preserve more lineage than `BROKEN` while carrying material qualification.
 
